@@ -237,7 +237,7 @@
                 <div class="similar-artworks">
                     {% for similar in similar_artworks %}
                     <a href="{% url 'artwork_detail' similar.id %}" class="similar-artwork">
-                        <img src="{{ similar.image.url }}" alt="{{ similar.title }}" loading="lazy">
+                        <img src="{{ similar.thumbnail_image.url|default:similar.image.url }}" alt="{{ similar.title }}" loading="lazy">
                         <span class="badge {% if similar.status == 'FOR_SALE' %}bg-success{% elif similar.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
                             {{ similar.get_status_display }}
                         </span>

@@ -1,0 +1,24 @@
+server {
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+	
+	server_name _;
+
+location ~ .php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass 127.0.0.1:9000;
+        
+	}
+
+
+	include snippets/letsencrypt-nginx-certs.conf;
+	include snippets/letsencrypt-nginx-route.conf;
+
+	root /var/www/html;
+
+	index index.php index.html index.htm index.nginx-debian.html;
+
+	location / {
+		# Default Location
+	}
+}

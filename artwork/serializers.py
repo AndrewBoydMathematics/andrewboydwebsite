@@ -8,7 +8,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artwork
-        fields = ['id', 'title', 'description', 'image', 'status', 'status_display', 
+        fields = ['id', 'title', 'description', 'image', 'tile_image', 'thumbnail_image', 'status', 'status_display', 
                  'price', 'medium', 'medium_display', 'category', 'category_display', 
                  'created_at', 'updated_at']
 

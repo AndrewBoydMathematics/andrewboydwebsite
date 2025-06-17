@@ -27,6 +27,9 @@ class Command(BaseCommand):
                 status='FOR_SALE',
                 price=price,
                 medium='OIL' if 'oil' in filename.lower() else 'GRAPHITE',
-                category='PORTRAIT' if 'portrait' in filename.lower() else 'FIGURE'
+                category='PORTRAIT' if 'portrait' in filename.lower() else 'FIGURE',
+                is_featured=False
             )
+            # Call save to generate tile and thumbnail images
+            artwork.save()
             self.stdout.write(self.style.SUCCESS(f'Created artwork: {artwork.title}')) 
