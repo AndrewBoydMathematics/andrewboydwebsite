@@ -1,16 +1,22 @@
 import os
 from pathlib import Path
+from .secrets.secret_key import SECRET_KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-your-secret-key-here'
+# SECRET_KEY is now imported from .secrets/secret_key.py
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['andrewboyd.co.uk', 
+                 '63-250-57-119.cloud-xip.com', 
+                 '63.250.57.119', 
+                 '185-237-13-131.cloud-xip.com',
+                 '185.237.13.131']
+
 
 # Application definition
 INSTALLED_APPS = [
