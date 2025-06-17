@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+
+{% block title %}Andrew Boyd - Oil Paintings and Life Drawings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Serif+Pro:wght@400;600&display=swap">
+<style>
+    body {
+        background-color: #f5f5f0;
+        color: #2c2c2c;
+        font-family: 'Source Serif Pro', serif;
+        margin: 0;
+        padding: 0;
+    }
+    .container-fluid {
+        max-width: 75%;
+        margin: 0 auto;
+        padding: 0;
+        padding-bottom: 200px; /* Add extra padding at bottom to accommodate expanded tiles */
+    }
+    .grid {
+        width: 100%;
+    }
+    .grid-item {
+        width: calc(33.333% - 20px);
+        margin: 10px;
+        break-inside: avoid;
+        transition: transform 0.3s ease;
+    }
+    /* Featured artwork grid */
+    #featuredGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 2rem;
+        margin-top: 2rem;
+    }
+    #featuredGrid .grid-item {
+        width: 100%;
+        margin: 0;
+    }
+    .grid-item.featured {
+        width: 100%;
+    }
+    .grid-item.latest {
+        width: calc(20% - 20px);
+    }
+    .grid-item.push-down {
+        transform: translateY(500px); /* Match the max-height of card-body */
+    }
+    .artwork-card {
+        height: 100%;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+    .artwork-card .card {
+        height: 100%;
+        background-color: #ffffff !important;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        overflow: visible;
+    }
+    .artwork-card:hover .card {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .card-img-top {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    .artwork-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+        font-family: 'Source Serif Pro', serif;
+    }
+    .section-title {
+        margin-bottom: 2rem;
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #2c2c2c;
+    }
+    .card-body {
+        text-align: center;
+        padding: 1.25rem;
+        background: white !important;
+        transition: all 0.3s ease;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        z-index: 1;
+    }
+    .artwork-card:hover .card-body {
+        max-height: 500px; /* Adjust this value based on your content */
+        opacity: 1;
+        padding: 1.25rem;
+        z-index: 1000; /* High z-index to appear above all other artwork */
+    }
+    /* Make featured artwork always expanded */
+    .featured .card-body {
+        max-height: 500px;
+        opacity: 1;
+        padding: 1.25rem;
+        position: relative;
+        top: 0;
+        box-shadow: none;
+    }
+    .featured .artwork-card:hover .card {
+        transform: none;
+    }
+    .featured .artwork-card:hover .card-img-top {
+        transform: none;
+    }
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    .card-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #4a4a4a;
+    }
+    .badge {
+        font-weight: 400;
+        padding: 0.5em 1em;
+    }
+    .artist-header {
+        text-align: center;
+        margin: 0;
+        padding: 0.5rem 0;
+    }
+    .artist-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        margin: 0;
+        padding: 0;
+        color: #2c2c2c;
+        line-height: 1.2;
+    }
+    .artist-subtitle {
+        font-family: 'Source Serif Pro', serif;
+        font-size: 1.5rem;
+        color: #4a4a4a;
+        font-weight: 400;
+        margin: 0.25rem 0 0 0;
+        padding: 0;
+        line-height: 1.2;
+    }
+    .filter-ribbon {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    .filter-ribbon::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e0e0e0;
+        background-color: transparent;
+        color: #4a4a4a;
+        font-family: 'Source Serif Pro', serif;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 3px;
+        flex: 1;
+        text-align: center;
+    }
+    .filter-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    /* Add styles for the position-relative container */
+    .position-relative {
+        position: relative;
+        overflow: hidden;
+    }
+    /* Add a subtle gradient overlay for better text readability */
+    .artwork-card:hover .position-relative::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+        pointer-events: none;
+    }
+    .artwork-card:hover {
+        z-index: 1000; /* Match the card-body z-index to ensure proper stacking */
+    }
+
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .container-fluid {
+            max-width: 95%;
+            padding-bottom: 100px;
+        }
+
+        /* Featured artwork in column with full width */
+        #featuredGrid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        #featuredGrid .grid-item {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+
+        /* Two columns for masonry grid */
+        .grid-item {
+            width: calc(50% - 10px) !important; /* Override masonry inline styles */
+            margin: 5px !important;
+        }
+
+        .grid-item.latest {
+            width: calc(50% - 10px) !important; /* Override the 20% width for latest items */
+        }
+
+        /* Override filter ribbon and buttons for mobile */
+        .filter-ribbon {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .filter-ribbon::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-ribbon .filter-btn {
+            flex: 0 0 auto !important;
+            white-space: nowrap;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            min-width: max-content;
+        }
+
+        /* Reduced margins and spacing */
+        .section-title {
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+            font-size: 1.75rem;
+        }
+
+        .artist-name {
+            font-size: 2.5rem;
+        }
+
+        .artist-subtitle {
+            font-size: 1.25rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        /* Keep main navigation horizontal */
+        .navbar-nav {
+            flex-direction: row !important;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 0.5rem;
+        }
+        .navbar-nav::-webkit-scrollbar {
+            display: none;
+        }
+        .navbar-nav .nav-item {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Artist Header -->
+    <header class="artist-header">
+        <h1 class="artist-name">Andrew Boyd</h1>
+        <p class="artist-subtitle">Oil Paintings and Life Drawings</p>
+    </header>
+
+    <!-- Featured Artwork Section -->
+    <section class="mb-5">
+        <h2 class="section-title">Featured Artwork</h2>
+        <div id="featuredGrid">
+            {% for artwork in featured_artworks %}
+            <div class="grid-item featured">
+                <a href="{% url 'artwork_detail' artwork.id %}" class="artwork-card">
+                    <div class="card">
+                        <div class="position-relative">
+                            <img src="{{ artwork.image.url }}" class="card-img-top" alt="{{ artwork.title }}" loading="lazy">
+                            <span class="badge {% if artwork.status == 'FOR_SALE' %}bg-success{% elif artwork.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
+                                {{ artwork.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ artwork.title }}</h5>
+                            <p class="card-text">{{ artwork.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <span class="badge bg-primary">{{ artwork.get_medium_display }}</span>
+                                <span class="badge bg-secondary">{{ artwork.get_category_display }}</span>
+                            </div>
+                            {% if artwork.status == 'FOR_SALE' %}
+                            <p class="card-text">
+                                <strong class="text-primary">£{{ artwork.price }}</strong>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- All Artwork Section -->
+    <section>
+        <h2 class="section-title">All Artwork</h2>
+        <div class="filter-groups">
+            <div class="filter-group">
+                <button class="filter-btn" data-group="status" data-value="all">All</button>
+                <button class="filter-btn" data-group="status" data-value="FOR_SALE">For Sale</button>
+                <button class="filter-btn" data-group="status" data-value="SOLD">Sold</button>
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-group="medium" data-value="all">All</button>
+                <button class="filter-btn" data-group="medium" data-value="OIL">Oil</button>
+                <button class="filter-btn" data-group="medium" data-value="GRAPHITE">Graphite</button>
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn" data-group="category" data-value="all">All</button>
+                <button class="filter-btn" data-group="category" data-value="PORTRAIT">Portrait</button>
+                <button class="filter-btn" data-group="category" data-value="FIGURE">Figure</button>
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn" data-group="sort" data-value="newest">New</button>
+                <button class="filter-btn" data-group="sort" data-value="oldest">Old</button>
+                <button class="filter-btn" data-group="sort" data-value="price_high">Price High</button>
+                <button class="filter-btn" data-group="sort" data-value="price_low">Price Low</button>
+            </div>
+        </div>
+        <div id="loadingIndicator" class="text-center" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div class="grid-container">
+            <div id="latestGrid" class="grid">
+                {% for artwork in latest_artworks %}
+                <div class="grid-item latest">
+                    <a href="{% url 'artwork_detail' artwork.id %}" class="artwork-card">
+                        <div class="card">
+                            <div class="position-relative">
+                                <img src="{{ artwork.image.url }}" class="card-img-top" alt="{{ artwork.title }}" loading="lazy">
+                                <span class="badge {% if artwork.status == 'FOR_SALE' %}bg-success{% elif artwork.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
+                                    {{ artwork.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ artwork.title }}</h5>
+                                <p class="card-text">{{ artwork.description|truncatewords:20 }}</p>
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <span class="badge bg-primary">{{ artwork.get_medium_display }}</span>
+                                    <span class="badge bg-secondary">{{ artwork.get_category_display }}</span>
+                                </div>
+                                {% if artwork.status == 'FOR_SALE' %}
+                                <p class="card-text">
+                                    <strong class="text-primary">£{{ artwork.price }}</strong>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Masonry
+        var grid = document.querySelector('.grid');
+        var masonry = new Masonry(grid, {
+            itemSelector: '.grid-item',
+            columnWidth: '.grid-item',
+            percentPosition: true,
+            transitionDuration: 0
+        });
+
+        // Track if layout is in progress
+        let isLayoutInProgress = false;
+
+        // Safe layout function with debounce
+        function safeLayout(grid) {
+            if (isLayoutInProgress) return;
+            
+            isLayoutInProgress = true;
+            grid.layout();
+            
+            // Reset flag after layout is complete
+            setTimeout(() => {
+                isLayoutInProgress = false;
+            }, 50);
+        }
+
+        // Reinitialize Masonry after all images are loaded
+        var images = grid.getElementsByTagName('img');
+        var loadedImages = 0;
+        
+        function checkAllImagesLoaded() {
+            loadedImages++;
+            if (loadedImages === images.length) {
+                safeLayout(masonry);
+            }
+        }
+
+        // Handle both loaded and error cases for each image
+        Array.from(images).forEach(function(img) {
+            if (img.complete) {
+                checkAllImagesLoaded();
+            } else {
+                img.addEventListener('load', checkAllImagesLoaded);
+                img.addEventListener('error', checkAllImagesLoaded);
+            }
+        });
+
+        // Also reinitialize on window resize
+        window.addEventListener('resize', function() {
+            safeLayout(masonry);
+        });
+
+        // Set default active buttons
+        const defaultButtons = {
+            'status': 'all',
+            'medium': 'all',
+            'category': 'all',
+            'sort': 'newest'
+        };
+
+        // Initialize default active states
+        Object.entries(defaultButtons).forEach(([group, value]) => {
+            const button = document.querySelector(`.filter-btn[data-group="${group}"][data-value="${value}"]`);
+            if (button) {
+                button.classList.add('active');
+            }
+        });
+
+        // Handle filter button clicks
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const group = this.dataset.group;
+                const value = this.dataset.value;
+                
+                // Toggle active state for buttons in the same group
+                document.querySelectorAll(`.filter-btn[data-group="${group}"]`).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Fetch filtered artwork
+                fetchFilteredArtwork();
+            });
+        });
+
+        async function fetchFilteredArtwork(page = 1) {
+            const params = new URLSearchParams();
+            
+            // Add active filters
+            document.querySelectorAll('.filter-btn.active').forEach(btn => {
+                const group = btn.dataset.group;
+                const value = btn.dataset.value;
+                if (value !== 'all') {
+                    params.append(group, value);
+                }
+            });
+
+            // Add page parameter
+            params.append('page', page);
+
+            try {
+                const grid = document.getElementById('latestGrid');
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                
+                // Show loading indicator
+                loadingIndicator.style.display = 'block';
+                
+                // Fade out grid on first page load
+                if (page === 1) {
+                    grid.style.opacity = '0';
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+
+                const response = await fetch(`/api/artwork/?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // Clear existing content only on first page
+                if (page === 1) {
+                    grid.innerHTML = '';
+                }
+                
+                // Add new artwork
+                data.results.forEach(artwork => {
+                    const card = createArtworkCard(artwork);
+                    grid.appendChild(card);
+                });
+                
+                // Wait for images to load before layout
+                imagesLoaded(grid).on('progress', function() {
+                    // Reinitialize Masonry
+                    masonry.reloadItems();
+                    safeLayout(masonry);
+                });
+
+                // Fade in grid
+                grid.style.opacity = '1';
+                
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+
+                // Store next page URL if available
+                if (data.next) {
+                    window.nextPageUrl = data.next;
+                } else {
+                    window.nextPageUrl = null;
+                }
+            } catch (error) {
+                console.error('Error fetching artwork:', error);
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        function createArtworkCard(artwork) {
+            const div = document.createElement('div');
+            div.className = 'grid-item latest';
+            div.innerHTML = `
+                <a href="/artwork/${artwork.id}" class="artwork-card">
+                    <div class="card">
+                        <div class="position-relative">
+                            <img src="${artwork.image}" class="card-img-top" alt="${artwork.title}" loading="lazy">
+                            <span class="badge ${artwork.status === 'FOR_SALE' ? 'bg-success' : artwork.status === 'SOLD' ? 'bg-danger' : 'bg-secondary'} status-badge">
+                                ${artwork.status_display}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${artwork.title}</h5>
+                            <p class="card-text">${artwork.description}</p>
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <span class="badge bg-primary">${artwork.medium_display}</span>
+                                <span class="badge bg-secondary">${artwork.category_display}</span>
+                            </div>
+                            ${artwork.status === 'FOR_SALE' ? `
+                                <p class="card-text">
+                                    <strong class="text-primary">£${artwork.price}</strong>
+                                </p>
+                            ` : ''}
+                        </div>
+                    </div>
+                </a>
+            `;
+            return div;
+        }
+
+        // Add scroll event listener for infinite scroll
+        let isLoading = false;
+        window.addEventListener('scroll', async () => {
+            if (isLoading || !window.nextPageUrl) return;
+            
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            if (scrollPosition >= documentHeight - 1000) {
+                isLoading = true;
+                const nextPage = new URL(window.nextPageUrl).searchParams.get('page');
+                await fetchFilteredArtwork(nextPage);
+                isLoading = false;
+            }
+        });
+
+        // Initial fetch with default filters
+        fetchFilteredArtwork(1);
+    });
+</script>
+{% endblock %} 

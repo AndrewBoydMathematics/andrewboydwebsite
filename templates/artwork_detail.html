@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ artwork.title }} - Artist Portfolio{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f5f5f0;
+        color: #2c2c2c;
+        font-family: 'Source Serif Pro', serif;
+    }
+    .artwork-container {
+        max-width: 75%;
+        margin: 0 auto;
+        padding: 2rem 0;
+    }
+    .back-button {
+        display: inline-block;
+        margin-bottom: 2rem;
+        color: #4a4a4a;
+        text-decoration: none;
+        transition: color 0.2s;
+        font-size: 1.1rem;
+        font-family: 'Source Serif Pro', serif;
+    }
+    .back-button:hover {
+        color: #2c2c2c;
+    }
+    .back-button i {
+        margin-right: 0.5rem;
+    }
+    .artwork-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: start;
+    }
+    .artwork-image-container {
+        position: sticky;
+        top: 2rem;
+    }
+    .artwork-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .artwork-info {
+        padding: 0;
+    }
+    .artwork-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: #2c2c2c;
+        font-weight: 600;
+    }
+    .artwork-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    .artwork-meta .badge {
+        font-weight: 400;
+        padding: 0.5em 1em;
+        font-family: 'Source Serif Pro', serif;
+    }
+    .artwork-description {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #4a4a4a;
+        margin-bottom: 2rem;
+    }
+    .artwork-price {
+        font-size: 1.8rem;
+        color: #2c2c2c;
+        font-weight: bold;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e0e0e0;
+    }
+    .more-like-this {
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+    .more-like-this h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: #2c2c2c;
+    }
+    .similar-artworks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    .similar-artwork {
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s ease;
+        position: relative;
+    }
+    .similar-artwork:hover {
+        transform: translateY(-5px);
+    }
+    .similar-artwork img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .similar-artwork .status-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 0.8rem;
+        padding: 0.3em 0.6em;
+        font-weight: 400;
+    }
+    .similar-artwork .title {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #4a4a4a;
+        text-align: center;
+    }
+    .payment-section {
+        margin-top: 2rem;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .payment-form {
+        max-width: 600px;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    .paypal-button-container {
+        margin-top: 2rem;
+    }
+    @media (max-width: 768px) {
+        .artwork-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .artwork-image-container {
+            position: static;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .artwork-image {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+        }
+        .artwork-title {
+            font-size: 2rem;
+        }
+        .artwork-container {
+            max-width: 90%;
+            padding: 1rem 0;
+        }
+        .payment-section {
+            padding: 1rem;
+        }
+        .form-control {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        .artwork-meta {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .artwork-meta .badge {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+        .artwork-price {
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+        }
+        .back-button {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .similar-artworks {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .similar-artwork img {
+            height: 120px;
+        }
+        .similar-artwork .title {
+            font-size: 0.8rem;
+        }
+        .similar-artwork .status-badge {
+            font-size: 0.7rem;
+            padding: 0.2em 0.4em;
+            top: 4px;
+            right: 4px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="artwork-container">
+    <a href="{% url 'home' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Gallery
+    </a>
+    
+    <div class="artwork-content">
+        <div class="artwork-image-container">
+            <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" class="artwork-image">
+        </div>
+        
+        <div class="artwork-info">
+            {% if similar_artworks %}
+            <div class="more-like-this">
+                <h3>More Like This</h3>
+                <div class="similar-artworks">
+                    {% for similar in similar_artworks %}
+                    <a href="{% url 'artwork_detail' similar.id %}" class="similar-artwork">
+                        <img src="{{ similar.image.url }}" alt="{{ similar.title }}" loading="lazy">
+                        <span class="badge {% if similar.status == 'FOR_SALE' %}bg-success{% elif similar.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
+                            {{ similar.get_status_display }}
+                        </span>
+                        <div class="title">{{ similar.title }}</div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <h1 class="artwork-title">{{ artwork.title }}</h1>
+            
+            <div class="artwork-meta">
+                <span class="badge {% if artwork.status == 'FOR_SALE' %}bg-success{% elif artwork.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %}">
+                    {{ artwork.get_status_display }}
+                </span>
+                <span class="badge bg-primary">{{ artwork.get_medium_display }}</span>
+                <span class="badge bg-secondary">{{ artwork.get_category_display }}</span>
+            </div>
+            
+            <p class="artwork-description">{{ artwork.description }}</p>
+            
+            {% if artwork.status == 'FOR_SALE' %}
+            <p class="artwork-price">£{{ artwork.price }}</p>
+            
+            <div class="payment-section">
+                <h3>Purchase This Artwork</h3>
+                <form id="payment-form" class="payment-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Shipping Address</label>
+                        <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="paypal-button-container">
+                        <div id="paypal-button-container"></div>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_account.client_id }}&currency=GBP"></script>
+<script>
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '{{ artwork.price }}'
+                    },
+                    payee: {
+                        email_address: '{{ paypal_account.email }}'
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Get form data
+                const form = document.getElementById('payment-form');
+                const formData = new FormData(form);
+                
+                // Send success data to our backend
+                fetch('{% url "payment_success" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        artwork_id: '{{ artwork.id }}',
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        phone: formData.get('phone'),
+                        address: formData.get('address')
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect to success page
+                        window.location.href = response.url;
+                    } else {
+                        throw new Error('Payment processing failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error processing your payment. Please contact us.');
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+{% endblock %} 

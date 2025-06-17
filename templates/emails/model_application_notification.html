@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Source Serif Pro', serif;
+            line-height: 1.6;
+            color: #2c2c2c;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>New Model Application Received</h1>
+        </div>
+        <div class="content">
+            <p>Hello Andrew,</p>
+            <p>A new model application has been received:</p>
+            <ul>
+                <li><strong>Name:</strong> {{ name }}</li>
+                <li><strong>Modeling Type:</strong> {{ modeling_type }}</li>
+            </ul>
+            <p>Please log in to your admin panel to review the full application details and images.</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html> 

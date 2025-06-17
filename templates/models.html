@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Become a Model - Andrew Boyd Art{% endblock %}
+
+{% block extra_css %}
+<style>
+    .models-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .models-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .models-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: #2c2c2c;
+        margin-bottom: 1rem;
+    }
+    .models-subtitle {
+        font-family: 'Source Serif Pro', serif;
+        font-size: 1.2rem;
+        color: #4a4a4a;
+        margin-bottom: 2rem;
+    }
+    .model-form {
+        background-color: transparent;
+        padding: 2rem;
+        border-radius: 8px;
+    }
+    .form-label {
+        font-family: 'Source Serif Pro', serif;
+        font-weight: 600;
+        color: #2c2c2c;
+    }
+    .form-text {
+        font-family: 'Source Serif Pro', serif;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .modeling-options {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background-color: transparent;
+        border-radius: 8px;
+    }
+    .modeling-option {
+        margin-bottom: 1rem;
+    }
+    .modeling-option h4 {
+        font-family: 'Playfair Display', serif;
+        color: #2c2c2c;
+        margin-bottom: 0.5rem;
+    }
+    .modeling-option p {
+        font-family: 'Source Serif Pro', serif;
+        color: #4a4a4a;
+        margin-bottom: 0;
+    }
+    .important-note {
+        background-color: rgba(255, 243, 205, 0.8);
+        border-left: 4px solid #ffc107;
+        padding: 1rem;
+        margin: 2rem 0;
+        font-family: 'Source Serif Pro', serif;
+    }
+    .form-control {
+        background-color: white;
+    }
+    .form-select {
+        background-color: white;
+    }
+    @media (max-width: 768px) {
+        .models-container {
+            padding: 1rem;
+        }
+        .models-title {
+            font-size: 2rem;
+        }
+        .models-subtitle {
+            font-size: 1.1rem;
+        }
+        .model-form {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="models-container">
+    <div class="models-header">
+        <h1 class="models-title">Become a Model</h1>
+        <p class="models-subtitle">Join me in creating beautiful artwork</p>
+    </div>
+
+    <div class="important-note">
+        <strong>Important Note:</strong> No artwork will be created from your submitted images without explicit agreement between both parties. Your privacy and comfort are our top priorities.
+    </div>
+
+    <div class="modeling-options">
+        <div class="modeling-option">
+            <h4>Voluntary Modeling</h4>
+            <p>Perfect for those who want to contribute to the artistic process and receive a digital copy of the final artwork.</p>
+        </div>
+        <div class="modeling-option">
+            <h4>Paid Modeling</h4>
+            <p>Professional modeling opportunities with competitive compensation. Perfect for experienced models or those looking to start their modeling journey.</p>
+        </div>
+    </div>
+
+    <form class="model-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" name="phone">
+            <div class="form-text">Optional - for scheduling purposes only</div>
+        </div>
+        <div class="mb-3">
+            <label for="modeling_type" class="form-label">Modeling Preference</label>
+            <select class="form-select" id="modeling_type" name="modeling_type" required>
+                <option value="">Select an option</option>
+                <option value="voluntary">Voluntary Modeling</option>
+                <option value="paid">Paid Modeling</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Tell us about yourself</label>
+            <textarea class="form-control" id="description" name="description" rows="4" required 
+                      placeholder="Please include your age, height, and any relevant experience or interests"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="images" class="form-label">Upload Photos</label>
+            <input type="file" class="form-control" id="images" name="images" multiple accept="image/*" required>
+            <div class="form-text">Please upload 2-3 clear photos of yourself. These will only be used for reference and will not be shared publicly.</div>
+        </div>
+        <div class="mb-3">
+            <label for="availability" class="form-label">Availability</label>
+            <textarea class="form-control" id="availability" name="availability" rows="2" required
+                      placeholder="Please describe your general availability for modeling sessions"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="additional_info" class="form-label">Additional Information</label>
+            <textarea class="form-control" id="additional_info" name="additional_info" rows="3"
+                      placeholder="Any other information you'd like to share"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+    </form>
+</div>
+{% endblock %} 

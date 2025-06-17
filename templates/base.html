@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andrew Boyd Art</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Serif+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Source Serif Pro', serif;
+            background-color: #f5f5f0;
+            color: #2c2c2c;
+        }
+        main {
+            margin: 0;
+            padding: 0;
+        }
+        /* Make all sections transparent by default */
+        section, .section, .payment-section, .commission-section {
+            background-color: transparent !important;
+        }
+        /* Make Bootstrap cards transparent by default */
+        .card {
+            background-color: transparent !important;
+            border: none !important;
+        }
+        .card-body {
+            background-color: transparent !important;
+        }
+        .navbar {
+            padding: 0.25rem 1rem;
+            background-color: transparent !important;
+            margin: 0;
+            min-height: auto;
+            font-family: 'Source Serif Pro', serif;
+        }
+        .navbar .container-fluid {
+            padding: 0;
+            margin: 0;
+            max-width: 75%;
+        }
+        .navbar-nav {
+            margin: 0;
+            padding: 0;
+            gap: 0.25rem;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .navbar-nav::-webkit-scrollbar {
+            display: none;
+        }
+        .nav-link {
+            color: #2c2c2c !important;
+            font-size: 0.85rem;
+            padding: 0.15rem 0.4rem !important;
+            transition: color 0.3s ease;
+            font-family: 'Source Serif Pro', serif;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .nav-link:hover {
+            color: #4a4a4a !important;
+        }
+        .nav-link i {
+            margin-right: 0.15rem;
+            font-size: 0.75rem;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+        }
+        .artwork-card {
+            transition: transform 0.2s;
+            font-family: 'Source Serif Pro', serif;
+        }
+        .artwork-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-family: 'Source Serif Pro', serif;
+        }
+        .filter-groups {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'Source Serif Pro', serif;
+        }
+        .filter-group {
+            display: flex;
+            gap: 0;
+            flex: 1;
+        }
+        .filter-btn {
+            flex: 1;
+            padding: 4px 8px;
+            color: #6c757d !important;
+            text-decoration: none !important;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+            border: none !important;
+            border-right: 1px solid #dee2e6 !important;
+            background: none !important;
+            font-size: 0.9rem;
+            box-shadow: none !important;
+            outline: none !important;
+            transition: none !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            font-family: 'Source Serif Pro', serif;
+        }
+        .filter-btn:last-child {
+            border-right: none !important;
+        }
+        .filter-btn:hover {
+            color: #495057 !important;
+            background: none !important;
+            text-decoration: none !important;
+        }
+        .filter-btn.active {
+            font-weight: 600;
+            color: #495057 !important;
+            background: none !important;
+            box-shadow: none !important;
+        }
+        .grid-container {
+            position: relative;
+            min-height: 200px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .grid {
+            width: 100%;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .grid-item {
+            width: calc(20% - 20px);
+            margin: 10px;
+            break-inside: avoid;
+            transition: opacity 0.3s ease-in-out;
+        }
+        @media (max-width: 1200px) {
+            .grid-item {
+                width: calc(25% - 20px);
+            }
+        }
+        @media (max-width: 992px) {
+            .grid-item {
+                width: calc(33.333% - 20px);
+            }
+        }
+        @media (max-width: 768px) {
+            .navbar .container-fluid {
+                max-width: 90%;
+            }
+            .grid-item {
+                width: calc(50% - 20px);
+            }
+            .filter-groups {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 20px;
+            }
+            .filter-group {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        @media (max-width: 576px) {
+            .grid-item {
+                width: calc(100% - 20px);
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'commission' %}">Commission</a>
+                </li>
+                {% if site_settings.show_models_page %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'models' %}">Models</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="mailto:aboydmobile@gmail.com">
+                        <i class="fas fa-envelope"></i> Email
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://instagram.com/andrewbboyd" target="_blank">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="mt-0 pt-0">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Commission Request - Artist Portfolio{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4">Request a Commission</h1>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Commission Process</h5>
+                    <ol class="mb-0">
+                        <li>Fill out the commission request form below</li>
+                        <li>I'll review your request and get back to you within 48 hours</li>
+                        <li>We'll discuss details, timeline, and pricing</li>
+                        <li>Once agreed, I'll start working on your artwork</li>
+                        <li>You'll receive progress updates and the final artwork</li>
+                    </ol>
+                </div>
+            </div>
+
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">
+                                Please provide your name.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" required>
+                            <div class="invalid-feedback">
+                                Please describe what you'd like me to create.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                            <div class="invalid-feedback">
+                                Please provide details about your commission request.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="size" class="form-label">Size</label>
+                            <input type="text" class="form-control" id="size" name="size" placeholder="e.g., 11x14 inches">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="medium" class="form-label">Preferred Medium</label>
+                            <select class="form-select" id="medium" name="medium">
+                                <option value="">Select a medium</option>
+                                <option value="GRAPHITE">Graphite</option>
+                                <option value="OIL">Oil</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="deadline" class="form-label">Deadline (if any)</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="budget" class="form-label">Budget Range</label>
+                            <input type="text" class="form-control" id="budget" name="budget" placeholder="e.g., $100-200">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reference_images" class="form-label">Reference Images</label>
+                            <input type="file" class="form-control" id="reference_images" name="reference_images" multiple accept="image/*">
+                            <div class="form-text">
+                                You can upload multiple reference images (optional)
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}
+{% endblock %} 

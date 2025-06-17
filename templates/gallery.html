@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery - Artist Portfolio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.css">
+<style>
+    .grid {
+        width: 100%;
+    }
+    .grid-item {
+        width: calc(20% - 20px);
+        margin: 10px;
+        break-inside: avoid;
+    }
+    .artwork-card {
+        height: 100%;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    .artwork-card .card {
+        height: 100%;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .artwork-card:hover .card {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .card-img-top {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+    .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+    }
+    .loading {
+        text-align: center;
+        padding: 20px;
+        display: none;
+    }
+    .loading.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select class="form-select" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="FOR_SALE">For Sale</option>
+                <option value="SOLD">Sold</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="mediumFilter">
+                <option value="">All Mediums</option>
+                <option value="OIL">Oil</option>
+                <option value="GRAPHITE">Graphite</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="PORTRAIT">Portrait</option>
+                <option value="FIGURE">Figure</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+        </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="grid">
+        {% for artwork in page_obj %}
+        <div class="grid-item">
+            <a href="{% url 'artwork_detail' artwork.id %}" class="artwork-card">
+                <div class="card">
+                    <div class="position-relative">
+                        <img src="{{ artwork.image.url }}" class="card-img-top" alt="{{ artwork.title }}" loading="lazy">
+                        <span class="badge {% if artwork.status == 'FOR_SALE' %}bg-success{% elif artwork.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
+                            {{ artwork.status|title }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ artwork.title }}</h5>
+                        <p class="card-text">{{ artwork.description|truncatewords:20 }}</p>
+                        <div class="d-flex gap-2 mb-3">
+                            <span class="badge bg-primary">{{ artwork.get_medium_display }}</span>
+                            <span class="badge bg-secondary">{{ artwork.get_category_display }}</span>
+                        </div>
+                        {% if artwork.status == 'FOR_SALE' %}
+                        <p class="card-text">
+                            <strong class="text-primary">£{{ artwork.price }}</strong>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading" id="loadingIndicator">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Masonry
+    var grid = document.querySelector('.grid');
+    var masonry = new Masonry(grid, {
+        itemSelector: '.grid-item',
+        columnWidth: '.grid-item',
+        percentPosition: true,
+        transitionDuration: '0.2s'
+    });
+
+    // Initialize imagesLoaded
+    imagesLoaded(grid).on('progress', function() {
+        masonry.layout();
+    });
+
+    // Infinite Scroll
+    var loading = false;
+    var page = 1;
+    var loadingIndicator = document.getElementById('loadingIndicator');
+
+    function loadMoreArtwork() {
+        if (loading) return;
+        loading = true;
+        loadingIndicator.classList.add('active');
+
+        fetch(`/api/artwork/?page=${page + 1}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(artwork => {
+                        var item = createArtworkElement(artwork);
+                        grid.appendChild(item);
+                        imagesLoaded(item).on('progress', function() {
+                            masonry.appended(item);
+                            masonry.layout();
+                        });
+                    });
+                    page++;
+                }
+                loading = false;
+                loadingIndicator.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Error loading more artwork:', error);
+                loading = false;
+                loadingIndicator.classList.remove('active');
+            });
+    }
+
+    function createArtworkElement(artwork) {
+        var div = document.createElement('div');
+        div.className = 'grid-item';
+        div.innerHTML = `
+            <a href="/artwork/${artwork.id}" class="artwork-card">
+                <div class="card">
+                    <div class="position-relative">
+                        <img src="${artwork.image}" class="card-img-top" alt="${artwork.title}" loading="lazy">
+                        <span class="badge ${artwork.status === 'FOR_SALE' ? 'bg-success' : artwork.status === 'SOLD' ? 'bg-danger' : 'bg-secondary'} status-badge">
+                            ${artwork.status}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${artwork.title}</h5>
+                        <p class="card-text">${artwork.description}</p>
+                        <div class="d-flex gap-2 mb-3">
+                            <span class="badge bg-primary">${artwork.get_medium_display}</span>
+                            <span class="badge bg-secondary">${artwork.get_category_display}</span>
+                        </div>
+                        ${artwork.status === 'FOR_SALE' ? `
+                        <p class="card-text">
+                            <strong class="text-primary">£${artwork.price}</strong>
+                        </p>
+                        ` : ''}
+                    </div>
+                </div>
+            </a>
+        `;
+        return div;
+    }
+
+    // Intersection Observer for infinite scroll
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                loadMoreArtwork();
+            }
+        });
+    });
+
+    observer.observe(loadingIndicator);
+
+    // Filter functionality
+    var statusFilter = document.getElementById('statusFilter');
+    var mediumFilter = document.getElementById('mediumFilter');
+    var categoryFilter = document.getElementById('categoryFilter');
+    var searchInput = document.getElementById('searchInput');
+
+    function applyFilters() {
+        var filters = {
+            status: statusFilter.value,
+            medium: mediumFilter.value,
+            category: categoryFilter.value,
+            search: searchInput.value
+        };
+
+        fetch(`/api/artwork/?${new URLSearchParams(filters)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing items
+                while (grid.firstChild) {
+                    grid.removeChild(grid.firstChild);
+                }
+                // Reset page counter
+                page = 1;
+                // Add new items
+                data.results.forEach(artwork => {
+                    var item = createArtworkElement(artwork);
+                    grid.appendChild(item);
+                });
+                // Reinitialize Masonry
+                masonry.reloadItems();
+                masonry.layout();
+            });
+    }
+
+    statusFilter.addEventListener('change', applyFilters);
+    mediumFilter.addEventListener('change', applyFilters);
+    categoryFilter.addEventListener('change', applyFilters);
+    searchInput.addEventListener('input', debounce(applyFilters, 300));
+
+    function debounce(func, wait) {
+        var timeout;
+        return function() {
+            var context = this;
+            var args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,329 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Andrew Boyd Art') }}{% endblock %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary: #2c2c2c;
+        --secondary: #4a4a4a;
+        --accent: #f5f5f0;
+        --primary-fg: #fff;
+        --body-fg: #2c2c2c;
+        --body-bg: #f5f5f0;
+        --body-quiet-color: #4a4a4a;
+        --body-loud-color: #2c2c2c;
+        --header-color: #2c2c2c;
+        --header-branding-color: #2c2c2c;
+        --header-bg: #ffffff;
+        --header-link-color: #2c2c2c;
+        --breadcrumbs-fg: #4a4a4a;
+        --breadcrumbs-link-fg: #2c2c2c;
+        --link-fg: #2c2c2c;
+        --link-hover-color: #4a4a4a;
+        --link-selected-fg: #2c2c2c;
+        --hairline-color: #e0e0e0;
+        --border-color: #e0e0e0;
+        --error-fg: #ba2121;
+        --message-success-bg: #dfd;
+        --message-warning-bg: #ffc;
+        --message-error-bg: #ffefef;
+        --darkened-bg: #f8f8f8;
+        --selected-bg: #e0e0e0;
+        --selected-row: #e0e0e0;
+        --button-fg: #2c2c2c;
+        --button-bg: #ffffff;
+        --button-hover-bg: #f5f5f0;
+        --default-button-bg: #ffffff;
+        --default-button-hover-bg: #f5f5f0;
+        --close-button-bg: #ffffff;
+        --close-button-hover-bg: #f5f5f0;
+        --delete-button-bg: #ffffff;
+        --delete-button-hover-bg: #f5f5f0;
+        --object-tools-fg: #2c2c2c;
+        --object-tools-bg: #ffffff;
+        --object-tools-hover-bg: #f5f5f0;
+    }
+
+    /* Custom styles */
+    body {
+        font-family: 'Source Serif Pro', serif !important;
+        background-color: var(--body-bg) !important;
+        color: var(--body-fg) !important;
+    }
+
+    #header {
+        background: var(--header-bg) !important;
+        color: var(--header-color) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        padding: 1rem 2rem !important;
+    }
+
+    #branding h1 {
+        font-family: 'Playfair Display', serif !important;
+        font-weight: 700 !important;
+    }
+
+    #branding h1 a:link, #branding h1 a:visited {
+        color: var(--header-branding-color) !important;
+    }
+
+    .module {
+        background: var(--header-bg) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .module h2, .module caption {
+        font-family: 'Playfair Display', serif !important;
+        font-weight: 700 !important;
+        background: var(--header-bg) !important;
+        color: var(--header-color) !important;
+        padding: 1rem !important;
+        border-radius: 8px 8px 0 0 !important;
+    }
+
+    .module caption {
+        font-size: 1.2rem !important;
+    }
+
+    .submit-row {
+        padding: 1rem !important;
+        background: var(--header-bg) !important;
+        border-radius: 0 0 8px 8px !important;
+    }
+
+    .submit-row input {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 4px !important;
+        background: var(--button-bg) !important;
+        color: var(--button-fg) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .submit-row input:hover {
+        background: var(--button-hover-bg) !important;
+    }
+
+    .button, input[type=submit], input[type=button], .submit-row input {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 4px !important;
+        background: var(--button-bg) !important;
+        color: var(--button-fg) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background: var(--button-hover-bg) !important;
+    }
+
+    .button.default {
+        background: var(--default-button-bg) !important;
+    }
+
+    .button.default:hover {
+        background: var(--default-button-hover-bg) !important;
+    }
+
+    #content {
+        padding: 2rem !important;
+    }
+
+    #content-main {
+        padding: 0 !important;
+    }
+
+    .form-row {
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--hairline-color) !important;
+    }
+
+    .form-row:last-child {
+        border-bottom: none !important;
+    }
+
+    .form-row label {
+        font-family: 'Source Serif Pro', serif !important;
+        font-weight: 600 !important;
+        color: var(--body-fg) !important;
+    }
+
+    .form-row input, .form-row select, .form-row textarea {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 0.5rem !important;
+        border-radius: 4px !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .help {
+        font-family: 'Source Serif Pro', serif !important;
+        color: var(--body-quiet-color) !important;
+        font-size: 0.9rem !important;
+        margin-top: 0.5rem !important;
+    }
+
+    .object-tools {
+        margin: 0 0 1rem 0 !important;
+    }
+
+    .object-tools a {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 4px !important;
+        background: var(--object-tools-bg) !important;
+        color: var(--object-tools-fg) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .object-tools a:hover {
+        background: var(--object-tools-hover-bg) !important;
+    }
+
+    .paginator {
+        margin: 1rem 0 !important;
+        padding: 1rem !important;
+        background: var(--header-bg) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+    }
+
+    .paginator a:link, .paginator a:visited {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 4px !important;
+        background: var(--button-bg) !important;
+        color: var(--button-fg) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .paginator a:hover {
+        background: var(--button-hover-bg) !important;
+    }
+
+    .paginator .this-page {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 4px !important;
+        background: var(--selected-bg) !important;
+        color: var(--selected-fg) !important;
+    }
+
+    .messagelist {
+        margin: 0 0 2rem 0 !important;
+    }
+
+    .messagelist li {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 1rem !important;
+        margin-bottom: 0.5rem !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+    }
+
+    .messagelist li.success {
+        background: var(--message-success-bg) !important;
+    }
+
+    .messagelist li.warning {
+        background: var(--message-warning-bg) !important;
+    }
+
+    .messagelist li.error {
+        background: var(--message-error-bg) !important;
+    }
+
+    /* Breadcrumbs */
+    div.breadcrumbs {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 1rem 2rem !important;
+        background: var(--header-bg) !important;
+        color: var(--breadcrumbs-fg) !important;
+        border-bottom: 1px solid var(--hairline-color) !important;
+    }
+
+    div.breadcrumbs a {
+        color: var(--breadcrumbs-link-fg) !important;
+    }
+
+    div.breadcrumbs a:hover {
+        color: var(--link-hover-color) !important;
+    }
+
+    /* Tables */
+    #changelist table {
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    #changelist table thead th {
+        font-family: 'Source Serif Pro', serif !important;
+        font-weight: 600 !important;
+        background: var(--header-bg) !important;
+        color: var(--header-color) !important;
+        padding: 1rem !important;
+    }
+
+    #changelist table tbody td {
+        font-family: 'Source Serif Pro', serif !important;
+        padding: 1rem !important;
+    }
+
+    #changelist table tbody tr:hover {
+        background: var(--selected-row) !important;
+    }
+
+    /* Filters */
+    #changelist-filter {
+        background: var(--header-bg) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        padding: 1rem !important;
+    }
+
+    #changelist-filter h2 {
+        font-family: 'Playfair Display', serif !important;
+        font-weight: 700 !important;
+        color: var(--header-color) !important;
+        padding: 0 0 1rem 0 !important;
+        border-bottom: 1px solid var(--hairline-color) !important;
+    }
+
+    #changelist-filter h3 {
+        font-family: 'Source Serif Pro', serif !important;
+        font-weight: 600 !important;
+        color: var(--header-color) !important;
+        padding: 1rem 0 0.5rem 0 !important;
+    }
+
+    #changelist-filter li {
+        padding: 0.25rem 0 !important;
+    }
+
+    #changelist-filter a {
+        color: var(--link-fg) !important;
+    }
+
+    #changelist-filter a:hover {
+        color: var(--link-hover-color) !important;
+    }
+
+    #changelist-filter li.selected a {
+        color: var(--link-selected-fg) !important;
+        font-weight: 600 !important;
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        {{ site_header|default:_('Andrew Boyd Art Administration') }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %} 
