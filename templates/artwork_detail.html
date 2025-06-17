@@ -227,7 +227,7 @@
     
     <div class="artwork-content">
         <div class="artwork-image-container">
-            <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" class="artwork-image">
+            <img src="{{ artwork.tile_image.url|default:artwork.image.url }}" alt="{{ artwork.title }}" class="artwork-image" id="main-artwork-image" style="cursor: pointer;">
         </div>
         
         <div class="artwork-info">
@@ -291,6 +291,12 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for full-res image -->
+<div id="fullResModal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
+    <span id="closeModal" style="position:absolute; top:30px; right:40px; color:white; font-size:2.5rem; cursor:pointer;">&times;</span>
+    <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" style="max-width:90vw; max-height:90vh; display:block; margin:auto; box-shadow:0 0 30px #000;">
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -344,5 +350,26 @@
             });
         }
     }).render('#paypal-button-container');
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var img = document.getElementById('main-artwork-image');
+    var modal = document.getElementById('fullResModal');
+    var closeBtn = document.getElementById('closeModal');
+    if (img && modal && closeBtn) {
+        img.addEventListener('click', function() {
+            modal.style.display = 'flex';
+        });
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+});
 </script>
 {% endblock %} 

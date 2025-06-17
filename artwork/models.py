@@ -103,31 +103,16 @@ class Artwork(models.Model):
             return
 
         img = Image.open(self.image)
-        
-        # Calculate dimensions to maintain aspect ratio
-        target_size = (150, 150)
-        img.thumbnail(target_size, Image.Resampling.LANCZOS)
-        
-        # Create a new image with white background
-        background = Image.new('RGB', target_size, (255, 255, 255))
-        
-        # Calculate position to center the image
-        offset = ((target_size[0] - img.size[0]) // 2,
-                 (target_size[1] - img.size[1]) // 2)
-        
-        # Paste the image onto the background
-        background.paste(img, offset)
-        
-        # Save to BytesIO
+        # Resize to fit within 150x150, maintaining aspect ratio
+        img.thumbnail((150, 150), Image.Resampling.LANCZOS)
+
         buffer = BytesIO()
-        background.save(buffer, format='JPEG', quality=85)
-        
-        # Generate filename
+        img.save(buffer, format='JPEG', quality=85)
+
         filename = os.path.basename(self.image.name)
         name, ext = os.path.splitext(filename)
         new_filename = f"{name}_thumb{ext}"
-        
-        # Save to model
+
         self.thumbnail_image.save(new_filename, ContentFile(buffer.getvalue()), save=False)
 
 class CommissionRequest(models.Model):
