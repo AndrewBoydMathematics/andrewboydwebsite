@@ -12,6 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost',
                  'andrewboyd.co.uk', 
+                 'www.andrewboyd.co.uk', 
                  '63-250-57-119.cloud-xip.com', 
                  '63.250.57.119', 
                  '185-237-13-131.cloud-xip.com',
