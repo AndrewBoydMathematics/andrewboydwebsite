@@ -328,7 +328,7 @@
                 <a href="{% url 'artwork_detail' artwork.id %}" class="artwork-card">
                     <div class="card">
                         <div class="position-relative">
-                            <img src="{{ artwork.tile_image.url|default:artwork.image.url }}" class="card-img-top" alt="{{ artwork.title }}" loading="lazy">
+                            <img src="{{ artwork.tile_image.url }}" class="card-img-top" alt="{{ artwork.title }}" loading="lazy">
                             <span class="badge {% if artwork.status == 'FOR_SALE' %}bg-success{% elif artwork.status == 'SOLD' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
                                 {{ artwork.get_status_display }}
                             </span>
